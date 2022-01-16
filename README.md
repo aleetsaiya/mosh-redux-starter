@@ -1,5 +1,5 @@
-##
-檔案:
+# Mosh Course - Redux Starter File
+## 檔案:
 
 + `index.js`: 發出 `dispatch`, `subscribe`, `getState` 的檔案
 + `reducer.js`: 建立 reducer
