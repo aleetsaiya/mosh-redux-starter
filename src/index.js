@@ -1,5 +1,7 @@
-import store from "./store";
-import * as actionsCreater from "./actionsCreater";
+import configureStore from "./store/configureStore";
+import * as actionsCreater from "./store/bugs";
+
+const store = configureStore();
 
 store.subscribe(() => console.log("Store changed!"));
 store.dispatch(actionsCreater.bugAdded("Bug 1"));

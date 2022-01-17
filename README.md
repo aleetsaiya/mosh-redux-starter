@@ -1,5 +1,16 @@
 # Mosh Course - Redux Starter File
 
+## duck-pattern
+使用 duck-pattern 的結構時，會把 actionCreater, actionTypes, reducer 三個檔案合併放在同一個檔案裡
+```diff
+src folder:
+- bugs
+- |-- actionTypes.js
+- |-- actionCreater.js
+- |-- reducer.js
++ bugs.js
+```
+
 ## redux 架構
 1. 建立 reducer，需要 currentState, action 作為參數，根據不同的 action types 來更新 store 中的 state 並回傳
 2. 建立 store，需要 reducer 作為參數，為主程式接口，負責處理主程式發出的 `dispatch`, `subscribe`, `getState` 等動作
