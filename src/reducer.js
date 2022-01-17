@@ -2,6 +2,7 @@ import * as actions from "./actionTypes";
 let lastId = 0;
 
 export default function reducer(state = [], action) {
+  // update current state according to whitch action type
   if (action.type === actions.BUG_ADDED)
     return [
       ...state,
