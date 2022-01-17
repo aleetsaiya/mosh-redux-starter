@@ -4,7 +4,7 @@ function createStore(reducer) {
   console.log("Store created!");
   // create private variable
   let state;
-  // maybe multiple UI will listener to the store
+  // store multiple listeners
   let listeners = [];
 
   function subscribe(listener) {

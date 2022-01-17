@@ -41,3 +41,87 @@ const store = createStore(
 );
 ```
 參考: [redux-devtools-extension](https://github.com/zalmoxisus/redux-devtools-extension#1-with-redux)
+
+Redux Toolkit:
+```bash
+npm install @reduxjs/toolkit
+```
+
+使用 redux toolkit 可以幫助我們建立之前手動建立的 `reducer`、`actionTypes``、actionCreater`。
+
+原本的 actionTypes + actionCreater > `createAction`: 
+```js
+import { createAction, createReducer } from "@reduxjs/toolkit";
+
+// Action Creators + Action Types
+export const bugAdded = createAction("bugAdded");
+export const bugResolved = createAction("bugResolved");
+export const bugRemoved = createAction("bugRemoved");
+```
+`createActions` 會根據我們傳入的 `typeName` 回傳一個 function，執行這個 function 並傳入 `argument` 會收到
+```js
+{
+  type: typeName,
+  payload: {
+    // your argument
+  }
+}
+```
+原本的 reducer > `createReducer`:
+```js
+export default createReducer([], {
+  // actions: function (event => event handler)
+  // added
+  [bugAdded.type]: (bugs, action) => {
+    bugs.push({
+      id: ++lastId,
+      description: action.payload.description,
+      resolved: false,
+    });
+  },
+  // resolved
+  [bugResolved.type]: (bugs, action) => {
+    const index = bugs.findIndex((bug) => bug.id === action.payload.id);
+    bugs[index].resolved = true;
+  },
+  // removed
+  [bugRemoved.type]: (bugs, action) => {
+    const index = bugs.findIndex((bug) => bug.id === action.payload.id);
+    bugs.splice(index, 1);
+  },
+});
+```
+
+也可以將三個合併再一起寫 (`createAction` + `createReducer`) > `createSlice`:
+```js
+import { createSlice } from "@reduxjs/toolkit";
+
+let lastId = 0;
+
+const slice = createSlice({
+  name: "bugs",
+  initialState: [],
+  reducers: {
+    // actions => action handlers
+    bugAdded: (bugs, action) => {
+      bugs.push({
+        id: ++lastId,
+        description: action.payload.description,
+        resolved: false,
+      });
+    },
+    bugResolved: (bugs, action) => {
+      const index = bugs.findIndex((bug) => bug.id === action.payload.id);
+      bugs[index].resolved = true;
+    },
+    bugRemoved: (bugs, action) => {
+      const index = bugs.findIndex((bug) => bug.id === action.payload.id);
+      bugs.splice(index, 1);
+    },
+  },
+});
+
+export const { bugAdded, bugResolved, bugRemoved } = slice.actions;
+export default slice.reducer;
+
+```
