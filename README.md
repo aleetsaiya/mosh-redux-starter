@@ -31,7 +31,7 @@ src folder:
 ```
 
 ## Extension
-Redux DevTools: [link](https://chrome.google.com/webstore/detail/redux-devtools/lmhkpmbekcpmknklioeibfkpmmfibljd?hl=zh-TW)
+### Redux DevTools: [link](https://chrome.google.com/webstore/detail/redux-devtools/lmhkpmbekcpmknklioeibfkpmmfibljd?hl=zh-TW)
 
 使用時要在 create store 加上參數:
 ```diff
@@ -42,9 +42,9 @@ const store = createStore(
 ```
 參考: [redux-devtools-extension](https://github.com/zalmoxisus/redux-devtools-extension#1-with-redux)
 
-Redux Toolkit:
+### Redux Toolkit:
 
-> 使用 redux toolkit 更改後的程式碼在 [btanch:redux-toolkit](https://github.com/aleetsaiya/mosh-redux-starter/tree/redux-toolkit)
+> 使用 redux toolkit 更改後的程式碼在 branch: [redux-toolkit](https://github.com/aleetsaiya/mosh-redux-starter/tree/redux-toolkit)
 
 ```bash
 npm install @reduxjs/toolkit
