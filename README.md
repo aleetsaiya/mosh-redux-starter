@@ -47,7 +47,19 @@ Redux Toolkit:
 npm install @reduxjs/toolkit
 ```
 
-使用 redux toolkit 可以幫助我們建立之前手動建立的 `reducer`、`actionTypes``、actionCreater`。
+使用 redux toolkit 可以幫助我們建立之前手動建立的 `reducer`、`actionTypes``、actionCreater` 以及 `createStore`。
+
+`createStore` :
+```js
+import { configureStore } from "@reduxjs/toolkit";
+import reducer from "./reducer";
+
+export default function () {
+  // when use configureStore, we don't need to check redux devTool extension
+  return configureStore({ reducer });
+}
+
+```  
 
 原本的 actionTypes + actionCreater > `createAction`: 
 ```js
@@ -157,4 +169,60 @@ export const getUnresolvedBugs = createSelector(
   (bugs) => bugs.filter((bug) => !bugs.resolved) // if the parameter "bugs" do not change, the bug filter won't execute, will use the result from the cache
 );
 
+```
+## Middleware
+middleware 是我們從 dispatch 到 root reducer 的過程中所添加的程式
+
+### create Middleware
++ 建立一個 middleware 資料夾 (使用這個名稱命名資料夾，資料夾 icon 會是不一樣的 ⚡)
++ 建立 middleware 檔案
+
+使用 `currying` 表示接收三個參數 ( `store`, `next`, `action` ) 的函數
+```js
+// next: next is the reference to the "next middleware function",
+// if this's the only middleware function we have, next is going
+// to be the reducer that is going to handle this action
+const logger = (store) => (next) => (action) => {
+  console.log("store", store);
+  console.log("next", next);
+  console.log("action", action);
+};
+
+export default logger;
+
+```
+
++ 於 createStore 的檔案內，增加 middleware (type: array)
+```diff
+import { configureStore } from "@reduxjs/toolkit";
+import reducer from "./reducer";
++ import logger from "./middleware/logger";
+
+export default function () {
+  return configureStore(
+    { reducer, 
++      middleware: [logger] 
+    }
+  );
+}
+
+```
+> 如果要在 middleware 傳入參數的話 (除了 store, next, action 的參數)，在 store 前面再加一個 param，並在 createStore 中的 middleware 傳入參數
+
+```js
+// in middleware file
+const logger = (param) => (store) => (next) => (action) => {
+  console.log(param);
+};
+
+export default logger;
+
+// in createStore file
+import { configureStore } from "@reduxjs/toolkit";
+import reducer from "./reducer";
+import logger from "./middleware/logger";
+
+export default function () {
+  return configureStore({ reducer, middleware: [logger("my param")] });
+}
 ```
