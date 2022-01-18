@@ -125,3 +125,17 @@ export const { bugAdded, bugResolved, bugRemoved } = slice.actions;
 export default slice.reducer;
 
 ```
+
+### Reducer architecture
+  <!-- insert reducer architecture image -->
+建立多個 reducer 管理不同的 state，然後最後再將這些 reducer `combine`
+```js
+import { combineReducers } from "redux";
+import projectsReducer from "./projects";
+import bugsReducer from "./bugs";
+
+export default combineReducers({
+  bugs: bugsReducer,
+  projects: projectsReducer,
+});
+```
