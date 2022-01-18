@@ -23,12 +23,16 @@ const slice = createSlice({
       const index = bugs.findIndex((bug) => bug.id === action.payload.id);
       bugs.splice(index, 1);
     },
+    bugAssignedToUser: (bugs, action) => {
+      const { bugId, userId } = action.payload;
+      const index = bugs.findIndex((bug) => bug.id === bugId);
+      bugs[index].userId = userId;
+    },
   },
 });
 
-console.log("Create slice:", slice);
-
-export const { bugAdded, bugResolved, bugRemoved } = slice.actions;
+export const { bugAdded, bugResolved, bugRemoved, bugAssignedToUser } =
+  slice.actions;
 export default slice.reducer;
 
 // Selector
@@ -42,3 +46,9 @@ export const getUnresolvedBugs = createSelector(
   (state) => state.entities.bugs, // output of this function will pass to the next function
   (bugs) => bugs.filter((bug) => !bug.resolved) // if the parameter "bugs" do not change, the bug filter won't execute, will use the result from the cache
 );
+
+export const getBugsByUser = (userId) =>
+  createSelector(
+    (state) => state.entities.bugs,
+    (bugs) => bugs.filter((bug) => bug.userId === userId)
+  );
