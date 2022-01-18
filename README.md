@@ -127,7 +127,8 @@ export default slice.reducer;
 ```
 
 ## Reducer architecture
-  <!-- insert reducer architecture image -->
+<img width="573" alt="Reducer" src="https://user-images.githubusercontent.com/67775387/149883054-0b5d39c6-8cc6-468d-b60d-4d6c5b033882.png">
+
 ### combineRedcers
 建立多個 reducer 管理不同的 state，然後最後再將這些 reducer `combine`
 ```js
