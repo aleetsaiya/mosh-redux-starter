@@ -126,8 +126,9 @@ export default slice.reducer;
 
 ```
 
-### Reducer architecture
+## Reducer architecture
   <!-- insert reducer architecture image -->
+### combineRedcers
 建立多個 reducer 管理不同的 state，然後最後再將這些 reducer `combine`
 ```js
 import { combineReducers } from "redux";
@@ -138,4 +139,21 @@ export default combineReducers({
   bugs: bugsReducer,
   projects: projectsReducer,
 });
+```
+
+### selector
+可以在每個 `reducer slice` 的檔案中增加 selector，幫助我們選擇特定的 state
+```js
+// Selector
+export const getUnresolvedBugs = (state) =>
+  state.entities.bugs.filter((bug) => !bug.resolved);
+```
+
+利用套件可以讓我們將 output 儲存起來，如果下一次 input 沒有變動的話，就使用上一次儲存的結果回傳
+```js
+export const getUnresolvedBugs = createSelector(
+  (state) => state.entities.bugs, // output of this function will pass to the next function
+  (bugs) => bugs.filter((bug) => !bugs.resolved) // if the parameter "bugs" do not change, the bug filter won't execute, will use the result from the cache
+);
+
 ```
