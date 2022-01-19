@@ -1,16 +1,9 @@
 import configureStore from "./store/configureStore";
-import {
-  bugAdded,
-  bugResolved,
-  bugAssignedToUser,
-  getUnresolvedBugs,
-  getBugsByUser,
-} from "./store/bugs";
-import { projectAdded } from "./store/projects";
-import { userAdded } from "./store/users";
+import * as actions from "./store/api";
 
 const store = configureStore();
-store.dispatch({
-  type: "error",
-  payload: { message: "An error occured." },
-});
+store.dispatch(
+  actions.apiRequest({
+    url: "/bugs",
+  })
+);

@@ -1,5 +1,13 @@
 # Mosh Course - Redux Starter File
 
+## 目錄
+[redux 架構](#)   
+[dispatch, subscribe, getState](#)  
+[Extensison](#)  
+[Multiple Reducers](#)  
+[Middleware](#)  
+
+
 ## redux 架構
 1. 建立 reducer，需要 currentState, action 作為參數，根據不同的 action types 來更新 store 中的 state 並回傳
 2. 建立 store，需要 reducer 作為參數，為主程式接口，負責處理主程式發出的 `dispatch`, `subscribe`, `getState` 等動作
@@ -11,6 +19,7 @@ subscribe: 參數為一 `function`，代表當 store 中的 state 更新時，�
 getState: 獲得當前 store 中的 state
 
 ## 檔案:
+> 課堂中各檔案的意思
 ### src folder: 
 + `index.js`: 發出 dispatch, subscribe, getState 的檔案
 + `reducer.js`: 建立 reducer
@@ -31,6 +40,7 @@ src folder:
 ```
 
 ## Extension
+> 介紹到的 redux extension
 ### Redux DevTools: [link](https://chrome.google.com/webstore/detail/redux-devtools/lmhkpmbekcpmknklioeibfkpmmfibljd?hl=zh-TW)
 
 使用時要在 create store 加上參數:
@@ -138,7 +148,7 @@ export default slice.reducer;
 
 ```
 
-## Reducer architecture
+## Multiple Reducers
 <img width="573" alt="Reducer" src="https://user-images.githubusercontent.com/67775387/149883054-0b5d39c6-8cc6-468d-b60d-4d6c5b033882.png">
 
 ### combineRedcers
@@ -174,8 +184,8 @@ export const getUnresolvedBugs = createSelector(
 middleware 是我們從 dispatch 到 root reducer 的過程中所添加的程式
 
 ### create Middleware
-+ 建立一個 middleware 資料夾 (使用這個名稱命名資料夾，資料夾 icon 會是不一樣的 ⚡)
-+ 建立 middleware 檔案
+1. 建立一個 middleware 資料夾 (使用這個名稱命名資料夾，資料夾 icon 會是不一樣的 ⚡)
+2. 建立 middleware 檔案
 
 使用 `currying` 表示接收三個參數 ( `store`, `next`, `action` ) 的函數
 ```js
@@ -192,7 +202,7 @@ export default logger;
 
 ```
 
-+ 於 createStore 的檔案內，增加 middleware (type: array)
+3. 於 createStore 的檔案內，增加 middleware (middleware: array of middleware)
 ```diff
 import { configureStore } from "@reduxjs/toolkit";
 import reducer from "./reducer";
@@ -225,4 +235,95 @@ import logger from "./middleware/logger";
 export default function () {
   return configureStore({ reducer, middleware: [logger("my param")] });
 }
+```
+
+### combine with API
+將 middleware 結合發送 api:
+
+1. 建立 action ( `createAction` ) 負責統一處理 action type:
+
+```js
+// store/api.js
+import { createAction } from "@reduxjs/toolkit";
+
+export const apiRequest = createAction("apiRequest"); // 送出 api request 的 action
+export const apiCallSuccess = createAction("apiCallSuccess"); // request success 的 action
+export const apiCallFailed = createAction("apiCallFailed"); // request failed 的 action
+
+```
+2. 建立 middleware，用來處理當我們從主程式收到 `api dispatch` 時要做的事情
+
+```js
+// store/middleware/api.js
+import axios from "axios";
+import * as actions from "../api";
+
+const api = (store) => (next) => async (action) => {
+  // 如果送出的 action type 不是 apiRequest，那就送至下一個 middleware 並跳出
+  if (action.type !== actions.apiRequest.type) {
+    next(action);
+    return;
+  }
+  // action type 是 apiRequest，把接收到的 action payload 提取出來
+  const { url, method, data, onSuccess, onError } = action.payload;
+  // 將原 dispatch (apiRequest) 繼續送往下一個 middleware / reducer
+  next(action);
+  try {
+    // 根據收到的 action payload，送出 request
+    const response = await axios.request({
+      baseURL: "http://localhost:9001/api",
+      url,
+      method,
+      data,
+    });
+    // 如果收到的 action payload 中沒特別設定 request success 的 action type 的話，就 dispatch 預設的 success action type
+    store.dispatch(actions.apiCallSuccess(response.data));
+    // 如果有特別設定 request success 的 action type，就依內容送出 dispatch
+    if (onSuccess) store.dispatch({ type: onSuccess, payload: response.data });
+  } catch (error) {
+    // request 失敗時，送出預設 error dispatch
+    store.dispatch(actions.apiCallFailed(error));
+    // 有特別設定 request error 的 action type，依內容送出 dispatch
+    if (onError) store.dispatch({ type: onError, payload: error });
+  }
+};
+
+export default api;
+
+```
+
+3. 將 middleware 加入至 store 內
+```js
+import { configureStore } from "@reduxjs/toolkit";
+import reducer from "./reducer";
+import toastify from "./middleware/toastify";
+import api from "./middleware/api";
+
+export default function () {
+  // when use configureStore, we don't need to check redux devTool extension
+  return configureStore({ reducer, middleware: [toastify, api] }); // 加入 api middleware
+}
+```
+
+4. 主程式送出 api dispatch
+```js
+import configureStore from "./store/configureStore";
+// 匯入統一接口的 api action type
+import * as actions from "./store/api";
+
+const store = configureStore();
+store.dispatch(
+  actions.apiRequest({
+    url: "/bugs",
+  })
+);
+// 上面的程式碼拆解如下:
+// store.dispatch(
+//   {
+//     type: apiRequest.type,
+//     payload: {
+//       url: "/bugs"
+//     }
+//   }
+// )
 ```
