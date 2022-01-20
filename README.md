@@ -382,7 +382,7 @@ store.dispatch(
 // )
 ```
 
-( 後續程式碼還有再增加 loading 以及 cache feature )
+( 後續程式碼還有再增加 loading 以及 cache feature，完整版直接看 `src folder` 內程式 )
 
 
 ## Testing Redux Application
@@ -408,9 +408,40 @@ npm install jest @types/jest @babel/core @babel/preset-env babel-jest --save-dev
 ```diff
 "scripts": {
   "start": "webpack-dev-server --config ./webpack.config.js",
-+  "test": "jest --watch"
++  "test": "jest"
 },
 ```
-5. 執行 `npm run test` 或是 `npx jest --watch`
+5. 執行 `npm run test`
 
 ### create test file
+常使用到的 function:
++ `describe` (name, fn): 一系列的測試，像是一個 folder 名叫 `name` 的感覺
++ `it` (name, fn): 一個名叫 `name` 測試
++ expect(`a`).toEqual(`b`): 如字面
+
+```js
+import { isEven } from "./math";
+
+// define a group of test
+describe("isEven", () => {
+  // define a test: it (testName, testFunction)
+  it("sould return true if given an even number", () => {
+    // Function under test (SUT)
+    const result = isEven(2);
+    expect(result).toEqual(true);
+  });
+
+  it("sould return false if given an odd number", () => {
+    const result = isEven(1);
+    expect(result).toEqual(false);
+  });
+});
+
+```
+
+### solitary test && social test
+solitary test 測試單一檔案是否有正常運作，social test 測試多個檔案合起來有沒有正常
+
+> solitary test 可能會因為太 detail，所以一個小改動 test 就出現錯誤
+
+solitary test demo: [link](#)

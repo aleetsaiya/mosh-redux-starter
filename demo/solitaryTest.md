@@ -1,3 +1,5 @@
+## Solitary Test
+```js
 // Solitary test DEMO
 
 import { addBug, bugAdded } from "../bugs";
@@ -24,3 +26,5 @@ describe("bugsSlice", () => {
     });
   });
 });
+
+```

@@ -81,7 +81,7 @@ export const resolveBug = (id) =>
     onSuccess: bugResolved.type,
   });
 
-const {
+export const {
   bugAdded,
   bugResolved,
   bugRemoved,
