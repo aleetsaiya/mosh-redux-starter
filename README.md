@@ -6,7 +6,7 @@
 + [Extensison](#extension)  
 + [Multiple Reducers](#multiple-reducers)  
 + [Middleware](#middleware)  
-+ [Testing](#testing)
++ [Testing redux application](#testing-redux-application)
 
 
 ## redux 架構
@@ -406,3 +406,11 @@ npm install jest @types/jest @babel/core @babel/preset-env babel-jest --save-dev
 
 2. create `babel.config.json` in root folder (cool file icon ⚡)  
 3. create `math.spec.js` in src folder  ( 在名稱裡面有 `spec` 的，通常來說是一個 test file )
+4. 在 package.json 加入:
+```diff
+"scripts": {
+  "start": "webpack-dev-server --config ./webpack.config.js",
++  "test": "jest --watch"
+},
+```
+5. 執行 `npm run test` 或是 `npx jest --watch`
