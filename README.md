@@ -444,4 +444,4 @@ solitary test 測試單一檔案是否有正常運作，social test 測試多個
 
 > solitary test 可能會因為太 detail，所以一個小改動 test 就出現錯誤
 
-solitary test demo: [link](#)
+solitary test demo: [link](#https://github.com/aleetsaiya/mosh-redux-starter/blob/master/demo/solitaryTest.md)
