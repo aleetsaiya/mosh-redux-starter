@@ -1,2 +1,16 @@
-// it (testing name, testing function)
-it("first test", () => {});
+import { isEven } from "./math";
+
+// define a group of test
+describe("isEven", () => {
+  // define a test: it (testName, testFunction)
+  it("sould return true if given an even number", () => {
+    // Function under test (SUT)
+    const result = isEven(2);
+    expect(result).toEqual(true);
+  });
+
+  it("sould return false if given an odd number", () => {
+    const result = isEven(1);
+    expect(result).toEqual(false);
+  });
+});

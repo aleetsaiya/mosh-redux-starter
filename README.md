@@ -405,7 +405,8 @@ npm install jest @types/jest @babel/core @babel/preset-env babel-jest --save-dev
 ```
 
 2. create `babel.config.json` in root folder (cool file icon ⚡)  
-3. create `math.spec.js` in src folder  ( 在名稱裡面有 `spec` 的，通常來說是一個 test file )
+3. create `tests` folder to store `spec` file
+3. create `testname.spec.js` in test folder ( 在名稱裡面有 `spec` 的，通常來說是一個 test file )
 4. 在 package.json 加入:
 ```diff
 "scripts": {
@@ -414,3 +415,5 @@ npm install jest @types/jest @babel/core @babel/preset-env babel-jest --save-dev
 },
 ```
 5. 執行 `npm run test` 或是 `npx jest --watch`
+
+### create test file
