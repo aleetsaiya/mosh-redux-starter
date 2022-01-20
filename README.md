@@ -172,8 +172,12 @@ export const getUnresolvedBugs = (state) =>
   state.entities.bugs.filter((bug) => !bug.resolved);
 ```
 
-利用套件可以讓我們將 output 儲存起來，如果下一次 input 沒有變動的話，就使用上一次儲存的結果回傳
+利用套件 `reselect` 可以讓我們將 output 儲存起來，如果下一次 input 沒有變動的話，就使用上一次儲存的結果回傳
 ```js
+import { createSelector } from "reselect";
+// Memoization
+// when the input not change, use the output from the cache (do not recalculate)
+// here we use "reselect" (npm install reselect)
 export const getUnresolvedBugs = createSelector(
   (state) => state.entities.bugs, // output of this function will pass to the next function
   (bugs) => bugs.filter((bug) => !bugs.resolved) // if the parameter "bugs" do not change, the bug filter won't execute, will use the result from the cache
@@ -236,6 +240,55 @@ export default function () {
   return configureStore({ reducer, middleware: [logger("my param")] });
 }
 ```
+
+### Thunk middleware
+
+平常我們 `dispatch` 時，我們只能 dispatch 一個 object，而 `thunk middleware` 就是透過 middleware 使我們達成 **"不僅可以 dispatch object，還可以 dispatch 一個 function"**。通常來說我們在製作一個 thunk middleware 時會需要傳 2 個參數，分別是 `store` 以及 `getState`，底下為自製一個 thunk middleware:
+
+```js
+// middleware/func.js
+const func = (store) => (next) => (action) => {
+  // 如果 action type 是 function 的話，就執行這個 function 並傳入 dispaych 以及 getState
+  if (typeof action === "function") action(store.dispatch, store.getState);
+  // 不是 function 就繼續送往下一個 middleware
+  else next(action);
+};
+
+export default func;
+```
+
+製作完 thunk middleware 後，將他加入至 store 中
+```js
+// store/configureStore.js
+import { configureStore } from "@reduxjs/toolkit";
+import reducer from "./reducer";
+import func from "./middleware/func";
+
+export default function () {
+  return configureStore({ reducer, middleware: [func] });
+}
+
+```
+
+除了上面自己做一個 thunk middleware，我們可以使用 [redux-thun](https://github.com/reduxjs/redux-thunk)。如果我們專案是使用 `redux toolkit` 的話，只需要在 configureStore 中的 middleware 內加入 `...getDefaultMiddleware()`，就可以使用他們做好的 thunk middleware。
+
+```diff
+// store/configureStore.js
+import { configureStore, getDefaultMiddleware } from "@reduxjs/toolkit";
+import reducer from "./reducer";
+- import func from "./middleware/func";
+
+export default function () {
+  return configureStore({
+    reducer,
+-    middleware: [func]
++    middleware: [...getDefaultMiddleware()],
+  });
+}
+
+```
+
+More about thunk: [讓你的Action能作更多 — Redux-Thunk](https://medium.com/frochu/%E9%80%81%E8%AE%93%E4%BD%A0%E7%9A%84action%E8%83%BD%E4%BD%9C%E6%9B%B4%E5%A4%9A-redux-thunk-c07bc5488e48)
 
 ### combine with API
 將 middleware 結合發送 api:
@@ -327,3 +380,8 @@ store.dispatch(
 //   }
 // )
 ```
+
+### 完整版 combine with api
+增加 `loading`, `cache`, `thunk middleware` 並優化主程式 api
+
+_middleware-api_ : [link](https://github.com/aleetsaiya/mosh-redux-starter/tree/middleware-api)
