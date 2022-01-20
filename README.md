@@ -172,8 +172,12 @@ export const getUnresolvedBugs = (state) =>
   state.entities.bugs.filter((bug) => !bug.resolved);
 ```
 
-利用套件可以讓我們將 output 儲存起來，如果下一次 input 沒有變動的話，就使用上一次儲存的結果回傳
+利用套件 `reselect` 可以讓我們將 output 儲存起來，如果下一次 input 沒有變動的話，就使用上一次儲存的結果回傳
 ```js
+import { createSelector } from "reselect";
+// Memoization
+// when the input not change, use the output from the cache (do not recalculate)
+// here we use "reselect" (npm install reselect)
 export const getUnresolvedBugs = createSelector(
   (state) => state.entities.bugs, // output of this function will pass to the next function
   (bugs) => bugs.filter((bug) => !bugs.resolved) // if the parameter "bugs" do not change, the bug filter won't execute, will use the result from the cache
@@ -327,3 +331,8 @@ store.dispatch(
 //   }
 // )
 ```
+
+### 完整版 combine with api
+結合 `loading`, `cache` 並優化主程式 api
+
+branch: link
