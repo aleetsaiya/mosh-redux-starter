@@ -1,11 +1,11 @@
 # Mosh Course - Redux Starter File
 
 ## 目錄
-[redux 架構](#)   
-[dispatch, subscribe, getState](#)  
-[Extensison](#)  
-[Multiple Reducers](#)  
-[Middleware](#)  
++ [redux 架構](#redux-架構)   
++ [dispatch, subscribe, getState](#dispatch-subscribe-getstate)  
++ [Extensison](#extension)  
++ [Multiple Reducers](#multiple-reducers)  
++ [Middleware](#middleware)  
 
 
 ## redux 架構
