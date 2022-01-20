@@ -1,54 +1,94 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { createSelector } from "reselect";
-
-let lastId = 0;
+import { apiCallBegan } from "./api";
+import moment from "moment";
 
 const slice = createSlice({
   name: "bugs",
-  initialState: [],
+  initialState: {
+    list: [],
+    loading: false,
+    lastFetch: null,
+  },
   reducers: {
     // actions => action handlers
     bugAdded: (bugs, action) => {
-      bugs.push({
-        id: ++lastId,
-        description: action.payload.description,
-        resolved: false,
-      });
+      bugs.list.push(action.payload);
     },
     bugResolved: (bugs, action) => {
-      const index = bugs.findIndex((bug) => bug.id === action.payload.id);
-      bugs[index].resolved = true;
-    },
-    bugRemoved: (bugs, action) => {
-      const index = bugs.findIndex((bug) => bug.id === action.payload.id);
-      bugs.splice(index, 1);
+      const index = bugs.list.findIndex((bug) => bug.id === action.payload.id);
+      bugs.list[index].resolved = true;
     },
     bugAssignedToUser: (bugs, action) => {
-      const { bugId, userId } = action.payload;
-      const index = bugs.findIndex((bug) => bug.id === bugId);
-      bugs[index].userId = userId;
+      // use object destructuring to get id property then push into new variable "bugId"
+      const { id: bugId, userId } = action.payload;
+      const index = bugs.list.findIndex((bug) => bug.id === bugId);
+      bugs.list[index].userId = userId;
+    },
+    bugsReceived: (bugs, action) => {
+      bugs.list = action.payload;
+      bugs.loading = false;
+      // when received, record the lastFetch time
+      bugs.lastFetch = Date.now();
+    },
+    bugsRequest: (bugs, action) => {
+      bugs.loading = true;
+    },
+    bugsRequestFailed: (bugs, action) => {
+      bugs.loading = false;
     },
   },
 });
 
-export const { bugAdded, bugResolved, bugRemoved, bugAssignedToUser } =
-  slice.actions;
-export default slice.reducer;
+// Action Creators
+const url = "/bugs";
 
-// Selector
-// export const getUnresolvedBugs = (state) =>
-//   state.entities.bugs.filter((bug) => !bug.resolved);
+// origin Actioncreator, we can only return a pure javascript object,
+// but use "thunk middleware", we can return a function
+// with two arguments, "dispatch" and "getState".
+// Like this: () => fn(dispatch, getState)
+export const loadBugs = () => (dispatch, getState) => {
+  const { lastFetch } = getState().entities.bugs;
 
-// Memoization
-// when the input not change, use the output from the cache (do not recalculate)
-// here we use "reselect" (npm install reselect)
-export const getUnresolvedBugs = createSelector(
-  (state) => state.entities.bugs, // output of this function will pass to the next function
-  (bugs) => bugs.filter((bug) => !bug.resolved) // if the parameter "bugs" do not change, the bug filter won't execute, will use the result from the cache
-);
+  // use package "moment" to get diff minutes between lastFetch and current time
+  const diffMinutes = moment().diff(moment(lastFetch), "minutes");
+  if (diffMinutes < 10) return;
 
-export const getBugsByUser = (userId) =>
-  createSelector(
-    (state) => state.entities.bugs,
-    (bugs) => bugs.filter((bug) => bug.userId === userId)
+  dispatch(
+    apiCallBegan({
+      url: url,
+      // 如果 request 開始 / 成功 / 失敗 時，要送出的 dispatch type
+      onStart: slice.actions.bugsRequest.type,
+      onSuccess: slice.actions.bugsReceived.type,
+      onError: slice.actions.bugsRequestFailed.type,
+    })
   );
+};
+
+export const addBug = (bug) =>
+  apiCallBegan({
+    url,
+    method: "post",
+    data: bug,
+    onSuccess: bugAdded.type,
+  });
+
+export const resolveBug = (id) =>
+  apiCallBegan({
+    url: url + "/" + id,
+    method: "patch",
+    data: { resolved: true },
+    onSuccess: bugResolved.type,
+  });
+
+const {
+  bugAdded,
+  bugResolved,
+  bugRemoved,
+  bugAssignedToUser,
+  bugsReceived,
+  bugsRequest,
+  bugsRequestFailed,
+} = slice.actions;
+
+export default slice.reducer;

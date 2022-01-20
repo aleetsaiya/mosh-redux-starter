@@ -382,10 +382,7 @@ store.dispatch(
 // )
 ```
 
-### 完整版 combine with api
-增加 `loading`, `cache`, `thunk middleware` 並優化主程式 api
-
-_middleware-api_ : [link](https://github.com/aleetsaiya/mosh-redux-starter/tree/middleware-api)
+( 後續程式碼還有再增加 loading 以及 cache feature )
 
 
 ## Testing Redux Application
