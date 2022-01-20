@@ -3,8 +3,6 @@ import { createSelector } from "reselect";
 import { apiCallBegan } from "./api";
 import moment from "moment";
 
-let lastId = 0;
-
 const slice = createSlice({
   name: "bugs",
   initialState: {
@@ -15,18 +13,15 @@ const slice = createSlice({
   reducers: {
     // actions => action handlers
     bugAdded: (bugs, action) => {
-      bugs.list.push({
-        id: ++lastId,
-        description: action.payload.description,
-        resolved: false,
-      });
+      bugs.list.push(action.payload);
     },
     bugResolved: (bugs, action) => {
       const index = bugs.list.findIndex((bug) => bug.id === action.payload.id);
       bugs.list[index].resolved = true;
     },
     bugAssignedToUser: (bugs, action) => {
-      const { bugId, userId } = action.payload;
+      // use object destructuring to get id property then push into new variable "bugId"
+      const { id: bugId, userId } = action.payload;
       const index = bugs.list.findIndex((bug) => bug.id === bugId);
       bugs.list[index].userId = userId;
     },
@@ -70,7 +65,23 @@ export const loadBugs = () => (dispatch, getState) => {
   );
 };
 
-export const {
+export const addBug = (bug) =>
+  apiCallBegan({
+    url,
+    method: "post",
+    data: bug,
+    onSuccess: bugAdded.type,
+  });
+
+export const resolveBug = (id) =>
+  apiCallBegan({
+    url: url + "/" + id,
+    method: "patch",
+    data: { resolved: true },
+    onSuccess: bugResolved.type,
+  });
+
+const {
   bugAdded,
   bugResolved,
   bugRemoved,
