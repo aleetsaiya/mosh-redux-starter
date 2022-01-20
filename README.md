@@ -6,6 +6,7 @@
 + [Extensison](#extension)  
 + [Multiple Reducers](#multiple-reducers)  
 + [Middleware](#middleware)  
++ [Testing](#testing)
 
 
 ## redux 架構
@@ -385,3 +386,23 @@ store.dispatch(
 增加 `loading`, `cache`, `thunk middleware` 並優化主程式 api
 
 _middleware-api_ : [link](https://github.com/aleetsaiya/mosh-redux-starter/tree/middleware-api)
+
+
+## Testing Redux Application
+### Automated Testing
++ Uni tests
++ Integration tests
++ End-to-end tests 
+
+`Uni test`: test the application without its external dependencies. (fast)  
+`Integration test`: slower than uni test, but give us more confidence.  
+`End-to-end test`: the most slowest, simple break the UI will break severals end-to-end test.  
+
+### Use Extension 
+1. install 
+```bash
+npm install jest @types/jest @babel/core @babel/preset-env babel-jest --save-dev
+```
+
+2. create `babel.config.json` in root folder (cool file icon ⚡)  
+3. create `math.spec.js` in src folder  ( 在名稱裡面有 `spec` 的，通常來說是一個 test file )
