@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { createSelector } from "reselect";
 import { apiCallBegan } from "./api";
+import moment from "moment";
 
 let lastId = 0;
 
@@ -32,6 +33,8 @@ const slice = createSlice({
     bugsReceived: (bugs, action) => {
       bugs.list = action.payload;
       bugs.loading = false;
+      // when received, record the lastFetch time
+      bugs.lastFetch = Date.now();
     },
     bugsRequest: (bugs, action) => {
       bugs.loading = true;
@@ -44,14 +47,28 @@ const slice = createSlice({
 
 // Action Creators
 const url = "/bugs";
-export const loadBugs = () =>
-  apiCallBegan({
-    url: url,
-    // 如果 request 開始 / 成功 / 失敗 時，要送出的 dispatch type
-    onStart: slice.actions.bugsRequest.type,
-    onSuccess: slice.actions.bugsReceived.type,
-    onError: slice.actions.bugsRequestFailed.type,
-  });
+
+// origin Actioncreator, we can only return a pure javascript object,
+// but use "thunk middleware", we can return a function
+// with two arguments, "dispatch" and "getState".
+// Like this: () => fn(dispatch, getState)
+export const loadBugs = () => (dispatch, getState) => {
+  const { lastFetch } = getState().entities.bugs;
+
+  // use package "moment" to get diff minutes between lastFetch and current time
+  const diffMinutes = moment().diff(moment(lastFetch), "minutes");
+  if (diffMinutes < 10) return;
+
+  dispatch(
+    apiCallBegan({
+      url: url,
+      // 如果 request 開始 / 成功 / 失敗 時，要送出的 dispatch type
+      onStart: slice.actions.bugsRequest.type,
+      onSuccess: slice.actions.bugsReceived.type,
+      onError: slice.actions.bugsRequestFailed.type,
+    })
+  );
+};
 
 export const {
   bugAdded,
