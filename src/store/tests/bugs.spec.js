@@ -34,15 +34,11 @@ describe("bugsSlice", () => {
     expect(bugsSlice().list).toContainEqual(saveBug);
   });
   it("sould not add the bug to the store if it's not saved to the server", async () => {
-    // AAA design
-    // Arange
     const bug = { description: "a" };
     fakeAxios.onPost("/bugs").reply(500);
 
-    // Act
     await store.dispatch(addBug(bug));
 
-    // Assert
     expect(bugsSlice().list).toHaveLength(0);
   });
 });
