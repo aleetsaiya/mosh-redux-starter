@@ -402,6 +402,13 @@ npm install jest @types/jest @babel/core @babel/preset-env babel-jest --save-dev
 ```
 
 2. create `babel.config.json` in root folder (cool file icon ⚡)  
+```js
+// in babel.config.json
+{
+    "presets": ["@babel/preset-env"],
+    "plugins": []
+}
+```
 3. create `tests` folder to store `spec` file
 4. create `testname.spec.js` in test folder ( 在名稱裡面有 `spec` 的，通常來說是一個 test file )
 5. 在 package.json 加入:
@@ -419,7 +426,7 @@ npm install jest @types/jest @babel/core @babel/preset-env babel-jest --save-dev
 常使用到的 function:
 + `describe` (name, fn): 一系列的測試，像是一個 folder 名叫 `name` 的感覺
 + `it` (name, fn): 一個名叫 `name` 測試
-+ expect(`a`).toEqual(`b`): 如字面
++ expect(`thing`) 後面加 `toBe()`, `toHaveLength()`, `toEqual()`, `toContainEqual` 等
 
 ```js
 import { isEven } from "./math";
