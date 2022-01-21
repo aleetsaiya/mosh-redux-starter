@@ -54,10 +54,11 @@ export const loadBugs = () => (dispatch, getState) => {
   const diffMinutes = moment().diff(moment(lastFetch), "minutes");
   if (diffMinutes < 10) return;
 
-  dispatch(
+  return dispatch(
     apiCallBegan({
       url: url,
       // 如果 request 開始 / 成功 / 失敗 時，要送出的 dispatch type
+      method: "get",
       onStart: slice.actions.bugsRequest.type,
       onSuccess: slice.actions.bugsReceived.type,
       onError: slice.actions.bugsRequestFailed.type,
@@ -80,6 +81,12 @@ export const resolveBug = (id) =>
     data: { resolved: true },
     onSuccess: bugResolved.type,
   });
+
+export const getUnresolvedBugs = createSelector(
+  (state) => state.entities.bugs,
+  (state) => state.entities.projects,
+  (bugs, projects) => bugs.list.filter((bug) => !bug.resolved)
+);
 
 export const {
   bugAdded,
