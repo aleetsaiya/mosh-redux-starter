@@ -413,6 +413,8 @@ npm install jest @types/jest @babel/core @babel/preset-env babel-jest --save-dev
 ```
 5. 執行 `npm run test`
 
+( `npx jest --coverage` 會建立 coverage 資料夾，可以打開 `index.html` 看哪些檔案被測試涵蓋 )
+
 ### create test file
 常使用到的 function:
 + `describe` (name, fn): 一系列的測試，像是一個 folder 名叫 `name` 的感覺
@@ -439,9 +441,11 @@ describe("isEven", () => {
 
 ```
 
-### solitary test && social test
-solitary test 測試單一檔案是否有正常運作，social test 測試多個檔案合起來有沒有正常
+### Unit test: solitary test && social test
+solitary test 測試單一檔案是否有正常運作，social test 測試多個檔案合起來有沒有正常，而這些都屬於 unit test
 
 > solitary test 可能會因為太 detail，所以一個小改動 test 就出現錯誤
 
-solitary test demo: [link](https://github.com/aleetsaiya/mosh-redux-starter/blob/master/demo/solitaryTest.md)
+solitary test demo: [link](https://github.com/aleetsaiya/mosh-redux-starter/blob/master/demo/solitaryTest.md)  
+
+social test demo: [link](#)

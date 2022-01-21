@@ -1,26 +1,48 @@
-// Solitary test DEMO
+// Social test DEMO
 
-import { addBug, bugAdded } from "../bugs";
-import { apiCallBegan } from "../api";
+// Use fake server to replace remote server
+// because uni test test the application without external dependencies
+import MockAdapter from "axios-mock-adapter";
+import axios from "axios";
 
-// define a group of test "bugsSlice"
+import { addBug } from "../bugs";
+import configureStore from "../configureStore";
+
 describe("bugsSlice", () => {
-  // define a group of test "action creators"
-  describe("action creators", () => {
-    // define a test "addBug"
-    it("addBug", () => {
-      const bug = { description: "a" };
-      const result = addBug(bug);
-      const expected = {
-        type: apiCallBegan.type,
-        payload: {
-          url: "/bugs",
-          method: "post",
-          data: bug,
-          onSuccess: bugAdded.type,
-        },
-      };
-      expect(result).toEqual(expected);
-    });
+  let fakeAxios;
+  let store;
+
+  // init before each test
+  beforeEach(() => {
+    fakeAxios = new MockAdapter(axios);
+    store = configureStore();
+  });
+
+  const bugsSlice = () => store.getState().entities.bugs;
+
+  it("sould add the bug to the store if it's saved to the server", async () => {
+    // AAA (Arange, Act, Assert) pattern
+    // Arange
+    const bug = { description: "a" };
+    const saveBug = { ...bug, id: 1 };
+    fakeAxios.onPost("/bugs").reply(200, saveBug);
+
+    // Act
+    await store.dispatch(addBug(bug));
+
+    // Assert
+    expect(bugsSlice().list).toContainEqual(saveBug);
+  });
+  it("sould not add the bug to the store if it's not saved to the server", async () => {
+    // AAA design
+    // Arange
+    const bug = { description: "a" };
+    fakeAxios.onPost("/bugs").reply(500);
+
+    // Act
+    await store.dispatch(addBug(bug));
+
+    // Assert
+    expect(bugsSlice().list).toHaveLength(0);
   });
 });
